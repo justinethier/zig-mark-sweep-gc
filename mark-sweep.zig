@@ -94,11 +94,7 @@ const VM = struct {
                 // This object wasn't reached, so remove it from the list and free it.
                 var unreached = obj;
 
-                if (obj.next) |n| {
-                    object.* = n; //unreached.next);
-                } else {
-                    object.* = null;
-                }
+                object.* = obj.next; // Unlink obj, chain points to obj.next instead
                 self.allocator.destroy(unreached);
 
                 self.numObjects -= 1;
