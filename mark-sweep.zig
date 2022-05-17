@@ -6,7 +6,6 @@
 
 const std = @import("std");
 const print = @import("std").debug.print;
-//const Gpa = std.heap.GeneralPurposeAllocator;
 
 const STACK_MAX = 256;
 const INIT_OBJ_NUM_MAX = 8;
@@ -19,13 +18,11 @@ const ObjectType = enum {
 const Object = struct {
     type: ObjectType,
     marked: bool,
-    data: Data,
+    data: union { value: i32, pair: struct { head: ?*Object, tail: ?*Object } },
 
     // The next object in the linked list of heap allocated objects.
     next: ?*Object,
 };
-
-const Data = union { value: i32, pair: struct { head: ?*Object, tail: ?*Object } };
 
 const VM = struct {
     /// Stack used to store objects between VM function calls.
@@ -142,7 +139,7 @@ const VM = struct {
 
     pub fn pushInt(self: *VM, value: i32) !void {
         var obj = try self.newObject(ObjectType.OBJ_INT);
-        obj.data = Data{ .value = value };
+        obj.data = .{ .value = value };
         self.push(obj);
     }
 
@@ -150,7 +147,7 @@ const VM = struct {
         var obj = try self.newObject(ObjectType.OBJ_PAIR);
         var t = self.pop();
         var h = self.pop();
-        obj.data = Data{ .pair = .{ .head = h, .tail = t } };
+        obj.data = .{ .pair = .{ .head = h, .tail = t } };
         self.push(obj);
         return obj;
     }
