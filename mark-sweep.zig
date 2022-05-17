@@ -1,3 +1,9 @@
+//! Justin Ethier, 2022
+//! https://github.com/justinethier/zig-mark-sweep-gc
+//!
+//! Implementation of a simple mark-sweep garbage collector. Ported from Bob Nystrom's original code in C.
+//!
+
 const std = @import("std");
 const print = @import("std").debug.print;
 //const Gpa = std.heap.GeneralPurposeAllocator;
@@ -22,28 +28,25 @@ const Object = struct {
 const Data = union { value: i32, pair: struct { head: ?*Object, tail: ?*Object } };
 
 const VM = struct {
-    //const Self = @This();
+    /// Stack used to store objects between VM function calls.
+    /// These objects serve as the roots of the GC.
+    stack: []*Object,
 
-    stack: []*Object, // TODO: Slice ? See ArrayList source code, pub fn init
+    /// Number of objects currently on the stack
     stackSize: u32,
 
-    // The first object in the linked list of all objects on the heap. */
+    /// The first object in the linked list of all objects on the heap.
     firstObject: ?*Object,
 
-    // The total number of currently allocated objects. */
+    /// The total number of currently allocated objects.
     numObjects: u32,
 
-    // The number of objects required to trigger a GC. */
+    /// The number of objects required to trigger a GC.
     maxObjects: u32,
 
     allocator: std.mem.Allocator,
 
     pub fn init(alloc: std.mem.Allocator) !VM {
-        // From: https://stackoverflow.com/questions/61422445/malloc-to-a-list-of-struct-in-zig
-        //const llocator: std.mem.Allocator = std.heap.page_allocator; // this is not the best choice of allocator, see below.
-        //const my_slice_of_foo: []*Object = try llocator.alloc(*Object, STACK_MAX);
-        //defer llocator.free(my_slice_of_foo);
-
         const stack: []*Object = try alloc.alloc(*Object, STACK_MAX);
 
         return VM{
@@ -56,6 +59,7 @@ const VM = struct {
         };
     }
 
+    /// Reclaim all memory allocated by the VM
     pub fn deinit(self: *VM) void {
         self.stackSize = 0;
         self.gc();
@@ -90,7 +94,6 @@ const VM = struct {
         var object = &(self.firstObject);
         while (object.*) |obj| {
             if (!obj.marked) {
-                //print("free unmarked object\n", .{});
                 // This object wasn't reached, so remove it from the list and free it.
                 var unreached = obj;
 
@@ -103,54 +106,14 @@ const VM = struct {
 
                 self.numObjects -= 1;
             } else {
-                //print("found marked object\n", .{});
                 // This object was reached, so unmark it (for the next GC) and move on to
                 // the next.
                 obj.marked = false;
                 object = &(obj.next);
             }
         }
-        print("Done with sweep", .{});
-
-        //var optional_object: ?*Object = self.firstObject;
-        //while (optional_object != null) {
-        //    const object = optional_object orelse break;
-        //    if (object.marked == false) {
-        //        print("free unmarked object\n", .{});
-        //        // This object wasn't reached, so remove it from the list and free it.
-        //        var unreached: *Object = object;
-
-        //        optional_object = unreached.next;
-        //        self.allocator.destroy(unreached);
-
-        //        self.numObjects -= 1;
-        //    } else {
-        //        print("found marked object\n", .{});
-        //        // This object was reached, so unmark it (for the next GC) and move on to
-        //        // the next.
-        //        object.marked = false;
-        //        optional_object = object.next;
-        //    }
-        //}
+        //print("Done with sweep", .{});
     }
-
-    //Object** object = &vm->firstObject;
-    //while (*object) {
-    //  if (!(*object)->marked) {
-    //    /* This object wasn't reached, so remove it from the list and free it. */
-    //    Object* unreached = *object;
-
-    //    *object = unreached->next;
-    //    free(unreached);
-
-    //    vm->numObjects--;
-    //  } else {
-    //    /* This object was reached, so unmark it (for the next GC) and move on to
-    //     the next. */
-    //    (*object)->marked = 0;
-    //    object = &(*object)->next;
-    //  }
-    //}
 
     pub fn gc(self: *VM) void {
         var numObjects = self.numObjects;
@@ -259,7 +222,6 @@ test "test 3" {
     _ = try vm.pushPair();
 
     vm.gc();
-    //  assert(vm->numObjects == 7, "Should have reached objects.");
     try std.testing.expect(vm.numObjects == 7); // "Should have reached objects."
     vm.deinit();
 }
@@ -276,13 +238,10 @@ test "test 4" {
     var b = vm.pushPair() catch unreachable;
 
     // Set up a cycle, and also make 2 and 4 unreachable and collectible.
-    //  a->tail = b;
-    //  b->tail = a;
     a.data.pair.tail = b;
     b.data.pair.tail = a;
 
     vm.gc();
-    //  assert(vm->numObjects == 4, "Should have collected objects.");
     try std.testing.expect(vm.numObjects == 4); // "Should have collected objects."
     vm.deinit();
 }
@@ -303,45 +262,9 @@ test "perf test" {
             _ = vm.pop();
         }
     }
-    //  for (int i = 0; i < 1000; i++) {
-    //    for (int j = 0; j < 20; j++) {
-    //      pushInt(vm, i);
-    //    }
-    //
-    //    for (int k = 0; k < 20; k++) {
-    //      pop(vm);
-    //    }
-    //  }
     vm.deinit();
 }
 
-pub fn main() !void {
-    //const stdout = std.io.getStdOut().writer();
-    //try stdout.print("Hello, {s}!\n", .{"world"});
-    const allocator = std.testing.allocator;
-    print("Test 2: Unreached objects are collected.\n", .{});
+// pub fn main() !void {
+// }
 
-    var _vm = try VM.init(allocator);
-    var vm = &_vm;
-
-    try vm.pushInt(1);
-    try vm.pushInt(2);
-    _ = vm.pop();
-    _ = vm.pop();
-
-    vm.gc();
-    try std.testing.expect(vm.numObjects == 0); // "Should have collected objects."
-    vm.deinit();
-}
-
-// Older notes / code:
-
-// TODO: pass allocator in
-//    pub fn init() !*Object {
-//        // https://dev.to/pmalhaire/ziglang-first-contact-with-memory-safety-and-simplicity-83p
-//        // based off example from https://ziglearn.org/chapter-2/
-//        //var gpa = Gpa(.{}){};
-//        //const allocator = &gpa.allocator;
-//        //var obj = try allocator.alloc(Object, 1);
-//        return obj;
-//    }
