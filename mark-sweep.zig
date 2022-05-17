@@ -7,12 +7,12 @@
 const std = @import("std");
 const print = @import("std").debug.print;
 
-const STACK_MAX = 256;
-const INIT_OBJ_NUM_MAX = 8;
+const stack_max = 256;
+const init_obj_num_max = 8;
 
 const ObjectType = enum {
-    OBJ_INT,
-    OBJ_PAIR,
+    int,
+    pair,
 };
 
 const Object = struct {
@@ -30,35 +30,35 @@ const VM = struct {
     stack: []*Object,
 
     /// Number of objects currently on the stack
-    stackSize: u32,
+    stack_size: u32,
 
     /// The first object in the linked list of all objects on the heap.
-    firstObject: ?*Object,
+    first_object: ?*Object,
 
     /// The total number of currently allocated objects.
-    numObjects: u32,
+    num_objects: u32,
 
     /// The number of objects required to trigger a GC.
-    maxObjects: u32,
+    max_objects: u32,
 
     allocator: std.mem.Allocator,
 
     pub fn init(alloc: std.mem.Allocator) !VM {
-        const stack: []*Object = try alloc.alloc(*Object, STACK_MAX);
+        const stack: []*Object = try alloc.alloc(*Object, stack_max);
 
         return VM{
             .stack = stack,
-            .stackSize = 0,
-            .firstObject = null,
-            .numObjects = 0,
-            .maxObjects = STACK_MAX,
+            .stack_size = 0,
+            .first_object = null,
+            .num_objects = 0,
+            .max_objects = stack_max,
             .allocator = alloc,
         };
     }
 
     /// Reclaim all memory allocated by the VM
     pub fn deinit(self: *VM) void {
-        self.stackSize = 0;
+        self.stack_size = 0;
         self.gc();
         self.allocator.free(self.stack);
     }
@@ -70,7 +70,7 @@ const VM = struct {
 
         object.marked = true;
 
-        if (object.type == ObjectType.OBJ_PAIR) {
+        if (object.type == ObjectType.pair) {
             if (object.data.pair.head) |head| {
                 self.mark(head);
             }
@@ -82,13 +82,13 @@ const VM = struct {
 
     fn markAll(self: *VM) void {
         var i: u32 = 0;
-        while (i < self.stackSize) : (i += 1) {
+        while (i < self.stack_size) : (i += 1) {
             self.mark(self.stack[i]);
         }
     }
 
     fn sweep(self: *VM) void {
-        var object = &(self.firstObject);
+        var object = &(self.first_object);
         while (object.*) |obj| {
             if (!obj.marked) {
                 // This object wasn't reached, so remove it from the list and free it.
@@ -97,7 +97,7 @@ const VM = struct {
                 object.* = obj.next; // Unlink obj, chain points to obj.next instead
                 self.allocator.destroy(unreached);
 
-                self.numObjects -= 1;
+                self.num_objects -= 1;
             } else {
                 // This object was reached, so unmark it (for the next GC) and move on to
                 // the next.
@@ -109,38 +109,38 @@ const VM = struct {
     }
 
     pub fn gc(self: *VM) void {
-        var numObjects = self.numObjects;
+        var num_objects = self.num_objects;
 
         self.markAll();
         self.sweep();
 
-        if (self.numObjects == 0) {
-            self.maxObjects = INIT_OBJ_NUM_MAX;
+        if (self.num_objects == 0) {
+            self.max_objects = init_obj_num_max;
         } else {
-            self.maxObjects *= 2;
+            self.max_objects *= 2;
         }
 
-        print("Collected {} objects, {} remaining.\n", .{ numObjects - self.numObjects, self.numObjects });
+        print("Collected {} objects, {} remaining.\n", .{ num_objects - self.num_objects, self.num_objects });
     }
 
     fn newObject(self: *VM, otype: ObjectType) !*Object {
         var obj = try self.allocator.create(Object);
         obj.type = otype;
         obj.marked = false;
-        obj.next = self.firstObject;
-        self.firstObject = obj;
-        self.numObjects += 1;
+        obj.next = self.first_object;
+        self.first_object = obj;
+        self.num_objects += 1;
         return obj;
     }
 
     pub fn pushInt(self: *VM, value: i32) !void {
-        var obj = try self.newObject(ObjectType.OBJ_INT);
+        var obj = try self.newObject(ObjectType.int);
         obj.data = .{ .value = value };
         self.push(obj);
     }
 
     pub fn pushPair(self: *VM) !*Object {
-        var obj = try self.newObject(ObjectType.OBJ_PAIR);
+        var obj = try self.newObject(ObjectType.pair);
         var t = self.pop();
         var h = self.pop();
         obj.data = .{ .pair = .{ .head = h, .tail = t } };
@@ -149,23 +149,23 @@ const VM = struct {
     }
 
     pub fn push(self: *VM, value: *Object) void {
-        if (self.stackSize >= STACK_MAX) {
+        if (self.stack_size >= stack_max) {
             print("Stack overflow!", .{});
             unreachable;
         }
 
-        self.stack[self.stackSize] = value;
-        self.stackSize += 1;
+        self.stack[self.stack_size] = value;
+        self.stack_size += 1;
     }
 
     pub fn pop(self: *VM) *Object {
-        if (self.stackSize == 0) {
+        if (self.stack_size == 0) {
             print("Stack underflow!", .{});
             unreachable;
         }
 
-        self.stackSize -= 1;
-        return self.stack[self.stackSize];
+        self.stack_size -= 1;
+        return self.stack[self.stack_size];
     }
 };
 
@@ -180,7 +180,7 @@ test "test 1" {
 
     vm.gc();
 
-    try std.testing.expect(vm.numObjects == 2);
+    try std.testing.expect(vm.num_objects == 2);
     vm.deinit();
 }
 
@@ -197,7 +197,7 @@ test "test 2" {
     _ = vm.pop();
 
     vm.gc();
-    try std.testing.expect(vm.numObjects == 0); // "Should have collected objects."
+    try std.testing.expect(vm.num_objects == 0); // "Should have collected objects."
     vm.deinit();
 }
 
@@ -215,7 +215,7 @@ test "test 3" {
     _ = try vm.pushPair();
 
     vm.gc();
-    try std.testing.expect(vm.numObjects == 7); // "Should have reached objects."
+    try std.testing.expect(vm.num_objects == 7); // "Should have reached objects."
     vm.deinit();
 }
 
@@ -235,7 +235,7 @@ test "test 4" {
     b.data.pair.tail = a;
 
     vm.gc();
-    try std.testing.expect(vm.numObjects == 4); // "Should have collected objects."
+    try std.testing.expect(vm.num_objects == 4); // "Should have collected objects."
     vm.deinit();
 }
 
