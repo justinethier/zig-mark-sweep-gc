@@ -7,11 +7,12 @@ The original implemtation is included here as `main.c` and is available at: http
 
 areas to highlight:
 
-(zig installation, no dependencies)
-(vim plugin)
-(sweep code)
-(while loops, if's, optionals, error unions)
-(debugging with gdb)
-(test sections)
+- zig installation, no dependencies
+- vim plugin
+- sweep code
+- while loops, if's, optionals, error unions
+- printing, and struct vs varargs
+- debugging with gdb
+- test sections
 
 what else?
