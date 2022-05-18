@@ -12,13 +12,13 @@ Anyway, off we go...
 
 The installation process is very simple. Just download the latest version from the [Releases page](https://ziglang.org/download/), extract to a folder, and add to your path.
 
-For example here is how it is installed for this project's continuous integration: 
+For example here is how Zig is installed for this project's continuous integration: 
 
           wget https://ziglang.org/download/0.9.1/zig-linux-x86_64-0.9.1.tar.xz
           tar xf zig-linux*.tar.xz
           echo "`pwd`/zig-linux-x86_64-0.9.1" >> $GITHUB_PATH
 
-A real installation would install somewhere more appropriate but this works well for our CI.
+A real installation would put the files somewhere more appropriate but this works just fine for our CI.
 
 `zig` comes as a large statically-linked executable. No dependencies required :thumbsup:.
 
