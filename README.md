@@ -30,7 +30,7 @@ As an unexpected bonus:
 
 > This plugin enables automatic code formatting on save by default using `zig fmt`.
 
-Much like with Go its super handy to be able to just *not worry* about code formatting. A nice bonus is that `zig fmt` also catches basic syntax errors:
+Much like with Go its super handy to be able to just *not worry* about code formatting. On top of that `zig fmt` also catches basic syntax errors:
 
 ![Terminal window with syntax error](zig-fmt-syntax-error.webp "Terminal window with syntax error")
 
