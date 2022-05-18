@@ -1,10 +1,12 @@
 # Mark-Sweep GC in Zig
 
-The project is the port of a modern classic - Bob Nystrom's simple mark-sweep GC - from C to Zig.  
+The project is the port of Bob Nystrom's simple mark-sweep GC - a modern classic! - from C to Zig. 
 
-Though I will explain a few parts of this program I can't do justice to the original write-up justice. I recommend reading it [here](https://journal.stuffwithstuff.com/2013/12/08/babys-first-garbage-collector/). The original implementation is included here as `main.c` and is available [here](https://github.com/munificent/mark-sweep).
+This is my first Zig project. Since this is a relatively new language I thought it would be helpful to give an overview of the experience and talk about the tooling.
 
-areas to highlight:
+Though I will explain a few parts of this program I can't do justice to Bob's original blog post. I recommend reading it [here](https://journal.stuffwithstuff.com/2013/12/08/babys-first-garbage-collector/). His C implementation is included as `main.c` in this repo and is available [here](https://github.com/munificent/mark-sweep).
+
+Anyway, off we go...
 
 ## Installing Zig
 
