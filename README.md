@@ -41,9 +41,26 @@ An interesting observation is that instead of C varargs Zig uses an [anonymous s
 
 ## while loops, if's, optionals, error unions
 
-TODO
+Increment as part of the loop:
 
-## Sweep
+    while (i < self.stack_size) : (i += 1) {
+
+Unbox optionals:
+
+    while (object.*) |obj| {
+    if (object.data.pair.head) |head| {
+
+Handle error unions:
+
+    var a = vm.pushPair() catch unreachable;
+
+## Misc Language Updates
+
+Other miscellaneous changes include naming conventions (underscores in names for non-callable variables), boolean type, organize functions as part of struct types, anything else?
+
+## Pointers
+
+TODO: optional type
 
 The `sweep` function uses a pointer-to-pointer to walk the link list of all objects and unlink unused objects:
 
@@ -70,7 +87,7 @@ void sweep(VM* vm)
 }
 ```
 
-Surprisingly, the Zig version is almost identical:
+Surprisingly, the Zig version handles all of the same pointer logic. Just with an updated syntax:
 
 ```zig
     fn sweep(self: *VM) void {
@@ -135,7 +152,10 @@ Breakpoint 1, VM.sweep (self=0x7fffffffd938) at /home/justin/Documents/zig-mark-
 (gdb) 
 ```
 
-- test sections
+## Testing
 
-what else?
+TODO: test sections
+
+## what else?
+
 - web assembly compilation (TBD, probably requires a main and possibly a more detailed implementation)
