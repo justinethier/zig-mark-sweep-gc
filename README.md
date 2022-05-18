@@ -30,7 +30,11 @@ As an unexpected bonus:
 
 > This plugin enables automatic code formatting on save by default using `zig fmt`.
 
-Much like with Go its super handy to be able to just *not worry* about code formatting. A nice bonus is that `zig fmt` also catches basic syntax errors and such. I tend to save frequently when coding so this provides constant feedback on the state of the code.
+Much like with Go its super handy to be able to just *not worry* about code formatting. A nice bonus is that `zig fmt` also catches basic syntax errors:
+
+![Terminal window with syntax error](zig-fmt-syntax-error.webp "Terminal window with syntax error")
+
+I tend to save frequently when coding so this provides constant feedback on the state of the code.
 
 ## Printing
 
@@ -49,12 +53,12 @@ Increment as part of the loop:
 
     while (i < self.stack_size) : (i += 1) {
 
-Unbox optionals:
+Unbox [optionals](https://ziglang.org/documentation/master/#Optionals):
 
     while (object.*) |obj| {
     if (object.data.pair.head) |head| {
 
-Handle error unions:
+Handle [error unions](https://ziglang.org/documentation/master/#Error-Union-Type):
 
     var a = vm.pushPair() catch unreachable;
 
@@ -91,7 +95,7 @@ void sweep(VM* vm)
 }
 ```
 
-Surprisingly, the Zig version handles all of the same pointer logic. Just with an updated syntax:
+Surprisingly, all of this pointer logic could be ported directly to Zig. Now we have the same function just with an updated syntax:
 
 ```zig
     fn sweep(self: *VM) void {
