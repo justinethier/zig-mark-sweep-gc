@@ -159,3 +159,8 @@ TODO: test sections
 ## what else?
 
 - web assembly compilation (TBD, probably requires a main and possibly a more detailed implementation)
+
+## Conclusion
+
+That's it for now. All in all this was a great first experience with Zig and I look forward to writing more Zig in the near future!
+
