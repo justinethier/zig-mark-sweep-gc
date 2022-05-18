@@ -1,10 +1,10 @@
-# Mark-Sweep GC in Zig
+# Porting a Simple Mark-Sweep Garbage Collector to Zig
 
 The project is the port of Bob Nystrom's simple mark-sweep GC - a modern classic! - from C to Zig. 
 
-This is my first Zig project. Since this is a relatively new language I thought it would be helpful to give an overview of the experience and talk about the tooling.
+This is my first Zig project. Between that and Zig being a relatively new language I thought it would be helpful to give an overview of the experience and talk about the tooling.
 
-Though I will explain a few parts of this program I can't do justice to Bob's original blog post. I recommend reading it [here](https://journal.stuffwithstuff.com/2013/12/08/babys-first-garbage-collector/). His C implementation is included as `main.c` in this repo and is available [here](https://github.com/munificent/mark-sweep).
+This post explains a few parts of the program but I can't do justice to Bob's original blog post. I recommend reading it [here](https://journal.stuffwithstuff.com/2013/12/08/babys-first-garbage-collector/). His C implementation is included as `main.c` in this repo and is available [here](https://github.com/munificent/mark-sweep).
 
 Anyway, off we go...
 
@@ -42,6 +42,8 @@ I just used debug printing to write output:
 An interesting observation is that instead of C varargs Zig uses an [anonymous struct](https://ziglang.org/documentation/master/#Anonymous-List-Literals). 
 
 ## while loops, if's, optionals, error unions
+
+Zig has many improvements over standard C syntax.
 
 Increment as part of the loop:
 
@@ -166,3 +168,9 @@ TODO: test sections
 
 That's it for now. All in all this was a great first experience with Zig and I look forward to writing more Zig in the near future!
 
+Useful links:
+
+- [Zig Language Reference](https://ziglang.org/documentation/master/)
+- [How to read the standard library source code](https://github.com/ziglang/zig/wiki/How-to-read-the-standard-library-source-code)
+- [Zig Standard Library Documentation](https://ziglang.org/documentation/master/std/)
+- [Zig Tutorial](https://ziglearn.org/)
