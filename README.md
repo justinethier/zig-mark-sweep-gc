@@ -193,7 +193,7 @@ Breakpoint 1, VM.sweep (self=0x7fffffffd938) at /home/justin/Documents/zig-mark-
 
 ## Conclusion
 
-That's it for now. All in all this was a great first experience with Zig and I look forward to writing more Zig in the near future!
+That's it for now. All in all this was a great first experience with Zig and I look forward to writing more Zig in the near future.
 
 Useful links:
 
