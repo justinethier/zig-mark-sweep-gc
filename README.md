@@ -1,6 +1,6 @@
 # Porting a Simple Mark-Sweep Garbage Collector to Zig
 
-The project is the port of Bob Nystrom's simple mark-sweep GC - a modern classic! - from C to Zig. 
+The project is the port of Bob Nystrom's simple mark-sweep garbage collector - a modern classic! - from C to Zig. 
 
 This is my first Zig project. Between that and Zig being a relatively new language I thought it would be helpful to give an overview of the experience and talk about the tooling.
 
@@ -119,6 +119,30 @@ Surprisingly, all of this pointer logic could be ported directly to Zig. Now we 
     }
 ```
 
+## Testing
+
+All of the tests were ported over to [test declarations](https://ziglang.org/documentation/master/#Zig-Test) which can be invoked via `zig test mark-sweep.zig`:
+
+```zig
+test "test 1" {
+    const allocator = std.testing.allocator;
+    print("Test 1: Objects on stack are preserved.\n", .{});
+
+    var _vm = try VM.init(allocator);
+    var vm = &_vm;
+    try vm.pushInt(1);
+    try vm.pushInt(2);
+
+    vm.gc();
+
+    try std.testing.expect(vm.num_objects == 2);
+    vm.deinit();
+}
+```
+
+Another important point! In Zig one does not call `malloc` to allocate memory. Instead one of many allocators is used to allocate memory in the way that is most appropriate for the situation at hand. Our code is organized like a typical library where any allocator may be passed in and retained for memory allocations over the life of a VM instance. 
+
+For testing we use `testing.allocator` which fails the test case if any memory is leaked. This enhances our test as `vm.deinit()` removes all of the [root objects](https://www.memorymanagement.org/glossary/r.html#term-root) and performs a collection. If the code is working properly this guarantees all allocated memory is freed.
 
 ## Debugging with gdb
 
@@ -159,10 +183,6 @@ Breakpoint 1, VM.sweep (self=0x7fffffffd938) at /home/justin/Documents/zig-mark-
 92              while (object.*) |obj| {
 (gdb) 
 ```
-
-## Testing
-
-TODO: test sections
 
 ## what else?
 
