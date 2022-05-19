@@ -201,8 +201,3 @@ Useful links:
 - [How to read the standard library source code](https://github.com/ziglang/zig/wiki/How-to-read-the-standard-library-source-code)
 - [Zig Standard Library Documentation](https://ziglang.org/documentation/master/std/)
 - [Zig Tutorial](https://ziglearn.org/)
-
-## what else?
-
-- web assembly compilation (TBD, probably requires a main and possibly a more detailed implementation)
-
