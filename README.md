@@ -1,6 +1,6 @@
 # Porting a simple Mark-Sweep Garbage Collector to Zig
 
-The project is the port of Bob Nystrom's simple mark-sweep garbage collector - a modern classic! - from C to Zig. 
+This project is a port of Bob Nystrom's simple mark-sweep garbage collector - a modern classic! - from C to Zig. 
 
 This is my first Zig project. Between that and Zig being a relatively new language I thought it would be helpful to give an overview of the experience and talk about the tooling.
 
