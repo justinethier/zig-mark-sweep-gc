@@ -68,8 +68,6 @@ Other miscellaneous changes include naming conventions (underscores in names for
 
 ## Pointers
 
-TODO: optional type
-
 The `sweep` function uses a pointer-to-pointer to walk the link list of all objects and unlink unused objects:
 
 ```c
@@ -95,7 +93,7 @@ void sweep(VM* vm)
 }
 ```
 
-Surprisingly, all of this pointer logic could be ported directly to Zig. Now we have the same function just with an updated syntax:
+Perhaps surprisingly, this function can be expressed line for line in Zig, just with a fresh new syntax. 
 
 ```zig
     fn sweep(self: *VM) void {
