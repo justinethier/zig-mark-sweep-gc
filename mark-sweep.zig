@@ -10,20 +10,28 @@ const print = @import("std").debug.print;
 const stack_max = 256;
 const init_obj_num_max = 8;
 
+/// All types of objects that are supported by the VM / Garbage Collector
 const ObjectType = enum {
     int,
     pair,
 };
 
+/// Object stores data for an individual object used by our VM.
 const Object = struct {
+    /// Type of object
     type: ObjectType,
+
+    /// Flag indicating whether the object is being used
     marked: bool,
+
+    /// Actual data maintained by the object
     data: union { value: i32, pair: struct { head: ?*Object, tail: ?*Object } },
 
-    // The next object in the linked list of heap allocated objects.
+    /// The next object in the linked list of heap allocated objects.
     next: ?*Object,
 };
 
+/// A small virtual machine.
 const VM = struct {
     /// Stack used to store objects between VM function calls.
     /// These objects serve as the roots of the GC.
@@ -41,8 +49,10 @@ const VM = struct {
     /// The number of objects required to trigger a GC.
     max_objects: u32,
 
+    /// Allocator that will be used to manage the VM's memory
     allocator: std.mem.Allocator,
 
+    /// Constructor
     pub fn init(alloc: std.mem.Allocator) !VM {
         const stack: []*Object = try alloc.alloc(*Object, stack_max);
 
@@ -58,11 +68,12 @@ const VM = struct {
 
     /// Reclaim all memory allocated by the VM
     pub fn deinit(self: *VM) void {
-        self.stack_size = 0;
+        self.stack_size = 0; // Removes all GC roots
         self.gc();
         self.allocator.free(self.stack);
     }
 
+    /// Mark will flag an object as being in-use. Unused objects are freed at the end of a GC cycle
     fn mark(self: *VM, object: *Object) void {
         // If already marked, we're done. Check this first to avoid recursing
         //   on cycles in the object graph.
@@ -80,6 +91,7 @@ const VM = struct {
         }
     }
 
+    /// Mark all objects currently in use by the VM
     fn markAll(self: *VM) void {
         var i: u32 = 0;
         while (i < self.stack_size) : (i += 1) {
@@ -87,6 +99,7 @@ const VM = struct {
         }
     }
 
+    /// Free unused memory
     fn sweep(self: *VM) void {
         var object = &(self.first_object);
         while (object.*) |obj| {
@@ -108,6 +121,7 @@ const VM = struct {
         //print("Done with sweep", .{});
     }
 
+    /// Initiate a garbage collection cycle
     pub fn gc(self: *VM) void {
         var num_objects = self.num_objects;
 
@@ -123,6 +137,7 @@ const VM = struct {
         print("Collected {} objects, {} remaining.\n", .{ num_objects - self.num_objects, self.num_objects });
     }
 
+    /// Internal function to create a new object
     fn newObject(self: *VM, otype: ObjectType) !*Object {
         var obj = try self.allocator.create(Object);
         obj.type = otype;
@@ -133,12 +148,14 @@ const VM = struct {
         return obj;
     }
 
+    /// Add an integer to the stack
     pub fn pushInt(self: *VM, value: i32) !void {
         var obj = try self.newObject(ObjectType.int);
         obj.data = .{ .value = value };
         self.push(obj);
     }
 
+    /// Box top two objects on the stack into a pair
     pub fn pushPair(self: *VM) !*Object {
         var obj = try self.newObject(ObjectType.pair);
         var t = self.pop();
@@ -148,6 +165,7 @@ const VM = struct {
         return obj;
     }
 
+    /// Add an object to the top of the stack
     pub fn push(self: *VM, value: *Object) void {
         if (self.stack_size >= stack_max) {
             print("Stack overflow!", .{});
@@ -158,6 +176,7 @@ const VM = struct {
         self.stack_size += 1;
     }
 
+    /// Remove top object from the stack
     pub fn pop(self: *VM) *Object {
         if (self.stack_size == 0) {
             print("Stack underflow!", .{});
