@@ -4,7 +4,7 @@ This project is a port of Bob Nystrom's simple mark-sweep garbage collector - a 
 
 This is my first Zig project. Between that and Zig being a relatively new language I thought it would be helpful to give an overview of the experience and talk about the tooling.
 
-This post explains a few parts of the program but I can't do justice to Bob's original blog post. I recommend reading it [here](https://journal.stuffwithstuff.com/2013/12/08/babys-first-garbage-collector/). His C implementation is included as `main.c` in this repo and is available [here](https://github.com/munificent/mark-sweep).
+This post explains a few parts of the program but I can't do justice to [Bob's original article](https://journal.stuffwithstuff.com/2013/12/08/babys-first-garbage-collector/) which I highly recommend reading. His C implementation is included as `main.c` in this repo and is available [on GitHub](https://github.com/munificent/mark-sweep).
 
 Anyway, off we go...
 
