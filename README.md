@@ -1,4 +1,4 @@
-# Porting a Simple Mark-Sweep Garbage Collector to Zig
+# Porting a simple Mark-Sweep Garbage Collector to Zig
 
 The project is the port of Bob Nystrom's simple mark-sweep garbage collector - a modern classic! - from C to Zig. 
 
