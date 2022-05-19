@@ -105,25 +105,25 @@ void sweep(VM* vm)
 Perhaps surprisingly, this function can be expressed line for line in Zig, just with a fresh new syntax. 
 
 ```zig
-    fn sweep(self: *VM) void {
-        var object = &(self.first_object);
-        while (object.*) |obj| {
-            if (!obj.marked) {
-                // This object wasn't reached, so remove it from the list and free it.
-                var unreached = obj;
+fn sweep(self: *VM) void {
+    var object = &(self.first_object);
+    while (object.*) |obj| {
+        if (!obj.marked) {
+            // This object wasn't reached, so remove it from the list and free it.
+            var unreached = obj;
 
-                object.* = obj.next;
-                self.allocator.destroy(unreached);
+            object.* = obj.next;
+            self.allocator.destroy(unreached);
 
-                self.num_objects -= 1;
-            } else {
-                // This object was reached, so unmark it (for the next GC) and move on to
-                // the next.
-                obj.marked = false;
-                object = &(obj.next);
-            }
+            self.num_objects -= 1;
+        } else {
+            // This object was reached, so unmark it (for the next GC) and move on to
+            // the next.
+            obj.marked = false;
+            object = &(obj.next);
         }
     }
+}
 ```
 
 ## Testing
