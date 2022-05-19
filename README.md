@@ -45,7 +45,7 @@ I just used debug printing to write output:
 
 An interesting observation is that instead of C varargs Zig uses an [anonymous struct](https://ziglang.org/documentation/master/#Anonymous-List-Literals). 
 
-## while loops, if's, optionals, error unions
+## While Loops, If's, Optionals, and More
 
 Zig has many improvements over standard C syntax.
 
@@ -62,10 +62,9 @@ Handle [error unions](https://ziglang.org/documentation/master/#Error-Union-Type
 
     var a = vm.pushPair() catch unreachable;
 
-## Misc Language Updates
+Other miscellaneous improvements over C include standard naming conventions (underscores in names for non-callable variables) and a cleaner boolean type.
 
-Other miscellaneous changes include naming conventions (underscores in names for non-callable variables), boolean type, organize functions as part of struct types, anything else?
-
+It is also helpful to define functions as part of a `struct` type, allowing a more natural organization of code. Though this has been a standard feature in most languages for a long time now. [Including C++](https://stackoverflow.com/a/13125960/101258).
 ## Pointers
 
 The `sweep` function uses a pointer-to-pointer to walk the link list of all objects and unlink unused objects:
@@ -182,10 +181,6 @@ Breakpoint 1, VM.sweep (self=0x7fffffffd938) at /home/justin/Documents/zig-mark-
 (gdb) 
 ```
 
-## what else?
-
-- web assembly compilation (TBD, probably requires a main and possibly a more detailed implementation)
-
 ## Conclusion
 
 That's it for now. All in all this was a great first experience with Zig and I look forward to writing more Zig in the near future!
@@ -196,3 +191,8 @@ Useful links:
 - [How to read the standard library source code](https://github.com/ziglang/zig/wiki/How-to-read-the-standard-library-source-code)
 - [Zig Standard Library Documentation](https://ziglang.org/documentation/master/std/)
 - [Zig Tutorial](https://ziglearn.org/)
+
+## what else?
+
+- web assembly compilation (TBD, probably requires a main and possibly a more detailed implementation)
+
