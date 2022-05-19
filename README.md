@@ -14,9 +14,11 @@ The installation process is very simple. Just download the latest version from t
 
 For example here is how Zig is installed for this project's continuous integration: 
 
-          wget https://ziglang.org/download/0.9.1/zig-linux-x86_64-0.9.1.tar.xz
-          tar xf zig-linux*.tar.xz
-          echo "`pwd`/zig-linux-x86_64-0.9.1" >> $GITHUB_PATH
+```bash
+wget https://ziglang.org/download/0.9.1/zig-linux-x86_64-0.9.1.tar.xz
+tar xf zig-linux*.tar.xz
+echo "`pwd`/zig-linux-x86_64-0.9.1" >> $GITHUB_PATH
+```
 
 A real installation would put the files somewhere more appropriate but this works just fine for our CI.
 
@@ -40,8 +42,10 @@ I tend to save frequently when coding so this provides constant feedback on the 
 
 I just used debug printing to write output:
 
-    const print = @import("std").debug.print;
-    print("Collected {} objects, {} remaining.\n", .{ numObjects - self.numObjects, self.numObjects });
+```zig
+const print = @import("std").debug.print;
+print("Collected {} objects, {} remaining.\n", .{ numObjects - self.numObjects, self.numObjects });
+```
 
 An interesting observation is that instead of C varargs Zig uses an [anonymous struct](https://ziglang.org/documentation/master/#Anonymous-List-Literals). 
 
@@ -51,16 +55,22 @@ Zig has many improvements over standard C syntax.
 
 Increment as part of the loop:
 
-    while (i < self.stack_size) : (i += 1) {
+```zig
+while (i < self.stack_size) : (i += 1) {
+```
 
 Unbox [optionals](https://ziglang.org/documentation/master/#Optionals):
 
-    while (object.*) |obj| {
-    if (object.data.pair.head) |head| {
+```zig
+while (object.*) |obj| {
+if (object.data.pair.head) |head| {
+```
 
 Handle [error unions](https://ziglang.org/documentation/master/#Error-Union-Type):
 
-    var a = vm.pushPair() catch unreachable;
+```zig
+var a = vm.pushPair() catch unreachable;
+```
 
 Other miscellaneous improvements over C include standard naming conventions (underscores in names for non-callable variables) and a cleaner boolean type.
 
