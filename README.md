@@ -128,7 +128,7 @@ fn sweep(self: *VM) void {
 
 ## Testing
 
-All of the tests were ported over to [test declarations](https://ziglang.org/documentation/master/#Zig-Test) which can be invoked via `zig test mark-sweep.zig`:
+All of the tests were ported over to [test declarations](https://ziglang.org/documentation/master/#Zig-Test). These can be invoked via `zig test mark-sweep.zig`:
 
 ```zig
 test "test 1" {
@@ -149,7 +149,7 @@ test "test 1" {
 
 Another important point! In Zig one does not call `malloc` to allocate memory. Instead one of many allocators is used to allocate memory in the way that is most appropriate for the situation at hand. Our code is organized like a typical library where any allocator may be passed in and retained for memory allocations over the life of a VM instance. 
 
-For testing we use `testing.allocator` which fails the test case if any memory is leaked. This enhances our test as `vm.deinit()` removes all of the [root objects](https://www.memorymanagement.org/glossary/r.html#term-root) and performs a collection. If the code is working properly this guarantees all allocated memory is freed.
+For testing we use `testing.allocator` which fails the test case if any memory is leaked. This enhances our test as `vm.deinit()` removes all of the [root objects](https://www.memorymanagement.org/glossary/r.html#term-root) and performs a collection. If our code is working properly all of the allocated memory is freed.
 
 ## Debugging with gdb
 
