@@ -77,7 +77,7 @@ Other miscellaneous improvements over C include standard naming conventions (und
 It is also helpful to define functions as part of a `struct` type, allowing a more natural organization of code. Though this has been a standard feature in most languages for a long time now. [Including C++](https://stackoverflow.com/a/13125960/101258).
 ## Pointers
 
-The `sweep` function uses a pointer-to-pointer to walk the link list of all objects and unlink unused objects:
+The `sweep` function uses a pointer-to-pointer to walk the linked list of all objects and unlink unused objects:
 
 ```c
 void sweep(VM* vm)
